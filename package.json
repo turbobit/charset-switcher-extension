@@ -1,9 +1,18 @@
 {
   "name": "charset-switcher-extension",
   "version": "1.0.0",
-  "description": "Chrome 확장 프로그램 - 웹페이지의 문자 인코딩을 강제로 지정합니다",
+  "description": "Chrome extension for forcing webpage charset",
   "author": "",
   "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean:dist": "node scripts/clean-dist.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "package:chrome": "node scripts/package-extension.mjs",
+    "i18n:check": "node scripts/validate-locales.mjs",
+    "release": "npm run clean:dist && npm run build:pages && npm run package:chrome"
+  },
   "repository": {
     "type": "git",
     "url": ""

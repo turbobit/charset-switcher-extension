@@ -11,6 +11,10 @@ const STATUS_MENU_ID = 'charset-current-status';
 const CURRENT_MENU_ID = 'charset-current-page-status';
 const DNR_RULE_ID_START = 1000;
 
+function msg(key, substitutions) {
+  return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
 function charsetMenuId(value) {
   return `charset-${value}`;
 }
@@ -20,14 +24,14 @@ async function createContextMenus() {
 
   chrome.contextMenus.create({
     id: ROOT_MENU_ID,
-    title: 'Charset Switcher',
+    title: msg('menuRoot'),
     contexts: ['page']
   });
 
   chrome.contextMenus.create({
     id: STATUS_MENU_ID,
     parentId: ROOT_MENU_ID,
-    title: 'Saved: none',
+    title: msg('menuSavedNone'),
     contexts: ['page'],
     enabled: false
   });
@@ -35,7 +39,7 @@ async function createContextMenus() {
   chrome.contextMenus.create({
     id: CURRENT_MENU_ID,
     parentId: ROOT_MENU_ID,
-    title: 'Current page: unknown',
+    title: msg('menuCurrentUnknown'),
     contexts: ['page'],
     enabled: false
   });
@@ -62,9 +66,6 @@ function buildCharsetHeaderRules(settings) {
     ([domain, charset]) => Boolean(domain) && Boolean(charset)
   );
 
-  // We create 2 rules per saved domain:
-  // 1) main_frame for the saved domain itself
-  // 2) sub_frame for child frames initiated by that saved domain page
   return entries.slice(0, 2000).flatMap(([domain, charset], index) => {
     const baseRule = {
       priority: 1,
@@ -160,9 +161,13 @@ async function updateContextMenuForTab(tab, frameUrl, frameId) {
 
   const allCharsets = await getAllCharsets();
 
-  const statusTitle = savedCharset ? `Saved: ${savedCharset}` : 'Saved: none';
+  const statusTitle = savedCharset ? msg('menuSavedValue', [savedCharset]) : msg('menuSavedNone');
+  const currentTitle = currentCharset
+    ? msg('menuCurrentValue', [currentCharset])
+    : msg('menuCurrentUnknown');
+
   chrome.contextMenus.update(STATUS_MENU_ID, { title: statusTitle });
-  chrome.contextMenus.update(CURRENT_MENU_ID, { title: `Current page: ${currentCharset}` });
+  chrome.contextMenus.update(CURRENT_MENU_ID, { title: currentTitle });
 
   allCharsets.forEach((charset) => {
     chrome.contextMenus.update(charsetMenuId(charset.value), {

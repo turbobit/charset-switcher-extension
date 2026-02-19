@@ -1,10 +1,6 @@
 import { getDomainFromUrl } from '../common/utils.js';
-import {
-  getSiteCharset,
-  saveSiteCharset,
-  removeSiteCharset,
-  getAllCharsets
-} from '../common/storage.js';
+import { getSiteCharset, saveSiteCharset, removeSiteCharset, getAllCharsets } from '../common/storage.js';
+import { applyI18n, t } from '../common/i18n.js';
 
 const domainNameEl = document.getElementById('domainName');
 const savedCharsetEl = document.getElementById('savedCharset');
@@ -27,7 +23,13 @@ function showMessage(message, type = 'success') {
 
 async function loadCharsets() {
   const charsets = await getAllCharsets();
-  charsetSelectEl.innerHTML = '<option value="">?좏깮?섏꽭??/option>';
+  charsetSelectEl.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = t('popupSelectCharset');
+  charsetSelectEl.appendChild(placeholder);
+
   charsets.forEach((charset) => {
     const option = document.createElement('option');
     option.value = charset.value;
@@ -37,12 +39,12 @@ async function loadCharsets() {
 }
 
 async function getDetectedCharsetFromTab(tabId) {
-  if (!tabId) return '?뺤씤 遺덇?';
+  if (!tabId) return t('popupUnknown');
   try {
     const response = await chrome.tabs.sendMessage(tabId, { type: 'get_current_charset' });
-    return response?.charset || 'unknown';
+    return response?.charset || t('popupUnknown');
   } catch {
-    return '?뺤씤 遺덇?';
+    return t('popupUnknown');
   }
 }
 
@@ -54,16 +56,16 @@ async function loadCurrentDomainInfo() {
   currentDomain = getDomainFromUrl(tab.url);
 
   if (!currentDomain) {
-    domainNameEl.textContent = '吏?먮릺吏 ?딅뒗 ?섏씠吏';
-    savedCharsetEl.textContent = '?놁쓬';
-    detectedCharsetEl.textContent = '?뺤씤 遺덇?';
+    domainNameEl.textContent = t('popupUnsupportedPage');
+    savedCharsetEl.textContent = t('popupNone');
+    detectedCharsetEl.textContent = t('popupUnknown');
     return;
   }
 
   domainNameEl.textContent = currentDomain;
 
   const savedCharset = await getSiteCharset(currentDomain);
-  savedCharsetEl.textContent = savedCharset || '?놁쓬';
+  savedCharsetEl.textContent = savedCharset || t('popupNone');
   charsetSelectEl.value = savedCharset || '';
 
   const detectedCharset = await getDetectedCharsetFromTab(currentTabId);
@@ -74,12 +76,12 @@ applyBtn.addEventListener('click', async () => {
   const selectedCharset = charsetSelectEl.value;
 
   if (!selectedCharset) {
-    showMessage('?몄퐫?⑹쓣 ?좏깮?섏꽭??', 'error');
+    showMessage(t('popupSelectCharsetError'), 'error');
     return;
   }
 
   if (!currentDomain) {
-    showMessage('?꾩옱 ?꾨찓?몄쓣 ?뺤씤?????놁뒿?덈떎.', 'error');
+    showMessage(t('popupDomainError'), 'error');
     return;
   }
 
@@ -96,15 +98,15 @@ applyBtn.addEventListener('click', async () => {
 
     savedCharsetEl.textContent = selectedCharset;
     detectedCharsetEl.textContent = selectedCharset;
-    showMessage(`${selectedCharset}濡???ν븯怨??곸슜?덉뒿?덈떎.`);
+    showMessage(t('popupApplied', [selectedCharset]));
   } catch (error) {
-    showMessage(`?ㅻ쪟: ${error.message}`, 'error');
+    showMessage(t('popupError', [error.message]), 'error');
   }
 });
 
 removeBtn.addEventListener('click', async () => {
   if (!currentDomain) {
-    showMessage('?꾩옱 ?꾨찓?몄쓣 ?뺤씤?????놁뒿?덈떎.', 'error');
+    showMessage(t('popupDomainError'), 'error');
     return;
   }
 
@@ -113,11 +115,11 @@ removeBtn.addEventListener('click', async () => {
     if (currentTabId) {
       await chrome.tabs.reload(currentTabId);
     }
-    savedCharsetEl.textContent = '?놁쓬';
+    savedCharsetEl.textContent = t('popupNone');
     charsetSelectEl.value = '';
-    showMessage('??λ맂 ?몄퐫???ㅼ젙???쒓굅?덉뒿?덈떎.');
+    showMessage(t('popupRemoved'));
   } catch (error) {
-    showMessage(`?ㅻ쪟: ${error.message}`, 'error');
+    showMessage(t('popupError', [error.message]), 'error');
   }
 });
 
@@ -126,7 +128,8 @@ settingsBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+  applyI18n();
+  document.title = t('popupTitle');
   await loadCharsets();
   await loadCurrentDomainInfo();
 });
-

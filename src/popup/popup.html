@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Charset Switcher</title>
@@ -12,69 +12,19 @@
       color: #222;
     }
     .container { padding: 14px; }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .header h2 { font-size: 16px; }
-    .settings-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
-    }
-    .card {
-      background: #fff;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-left: 4px solid #4caf50;
-    }
-    .label {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-    .value {
-      font-size: 13px;
-      font-weight: 600;
-      word-break: break-all;
-    }
-    .charset-selector {
-      background: #fff;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    select {
-      width: 100%;
-      margin-top: 6px;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: #fff;
-    }
+    .settings-btn { border: none; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; }
+    .card { background: #fff; border-radius: 6px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #4caf50; }
+    .label { font-size: 12px; color: #666; margin-bottom: 4px; }
+    .value { font-size: 13px; font-weight: 600; word-break: break-all; }
+    .charset-selector { background: #fff; border-radius: 6px; padding: 10px; margin-bottom: 10px; }
+    select { width: 100%; margin-top: 6px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #fff; }
     .button-group { display: flex; gap: 8px; }
-    .btn {
-      flex: 1;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
+    .btn { flex: 1; border: none; border-radius: 4px; padding: 8px 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
     .btn-primary { background: #4caf50; color: #fff; }
     .btn-secondary { background: #eee; color: #333; }
-    .success, .error {
-      margin-bottom: 10px;
-      border-radius: 6px;
-      padding: 8px;
-      font-size: 12px;
-    }
+    .success, .error { margin-bottom: 10px; border-radius: 6px; padding: 8px; font-size: 12px; }
     .success { background: #e8f5e9; color: #1b5e20; }
     .error { background: #ffebee; color: #b71c1c; }
   </style>
@@ -82,37 +32,35 @@
 <body>
   <div class="container">
     <div class="header">
-      <h2>Charset Switcher</h2>
-      <button class="settings-btn" id="settingsBtn" title="설정">⚙</button>
+      <h2 data-i18n="popupTitle">Charset Switcher</h2>
+      <button class="settings-btn" id="settingsBtn" data-i18n-title="popupSettingsTitle">⚙</button>
     </div>
 
     <div id="message"></div>
 
     <div class="card">
-      <div class="label">현재 사이트</div>
+      <div class="label" data-i18n="popupCurrentSite">Current site</div>
       <div class="value" id="domainName">-</div>
     </div>
 
     <div class="card">
-      <div class="label">저장된 인코딩 (리프레시 시 적용)</div>
+      <div class="label" data-i18n="popupSavedCharset">Saved charset (applies on reload)</div>
       <div class="value" id="savedCharset">-</div>
     </div>
 
     <div class="card">
-      <div class="label">현재 페이지 감지 인코딩</div>
+      <div class="label" data-i18n="popupDetectedCharset">Detected charset</div>
       <div class="value" id="detectedCharset">-</div>
     </div>
 
     <div class="charset-selector">
-      <label for="charsetSelect" class="label">인코딩 변경</label>
-      <select id="charsetSelect">
-        <option value="">선택하세요</option>
-      </select>
+      <label for="charsetSelect" class="label" data-i18n="popupChangeCharset">Change charset</label>
+      <select id="charsetSelect"></select>
     </div>
 
     <div class="button-group">
-      <button class="btn btn-primary" id="applyBtn">저장 + 적용</button>
-      <button class="btn btn-secondary" id="removeBtn">저장 해제</button>
+      <button class="btn btn-primary" id="applyBtn" data-i18n="popupApply">Save + Apply</button>
+      <button class="btn btn-secondary" id="removeBtn" data-i18n="popupRemove">Remove saved</button>
     </div>
   </div>
 
