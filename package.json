@@ -1,0 +1,20 @@
+{
+  "name": "charset-switcher-extension",
+  "version": "1.0.0",
+  "description": "Chrome 확장 프로그램 - 웹페이지의 문자 인코딩을 강제로 지정합니다",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "chrome-extension",
+    "charset",
+    "encoding",
+    "utf-8",
+    "euc-kr",
+    "internationalization"
+  ],
+  "manifest": "manifest.json"
+}
