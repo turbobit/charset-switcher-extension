@@ -1,4 +1,12 @@
-import { mkdirSync, copyFileSync, cpSync, existsSync, lstatSync, readFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  copyFileSync,
+  cpSync,
+  existsSync,
+  lstatSync,
+  readFileSync,
+  readdirSync
+} from 'node:fs';
 import { resolve, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -21,6 +29,20 @@ for (const rel of includePaths) {
   } else {
     mkdirSync(resolve(dstPath, '..'), { recursive: true });
     copyFileSync(srcPath, dstPath);
+  }
+}
+
+const localesRoot = resolve('_locales');
+if (existsSync(localesRoot) && lstatSync(localesRoot).isDirectory()) {
+  const localeDirs = readdirSync(localesRoot, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .filter((name) => /^[a-z]{2}(?:_[A-Z]{2})?$/.test(name));
+
+  for (const locale of localeDirs) {
+    const srcPath = resolve('_locales', locale);
+    const dstPath = resolve(extensionDir, '_locales', locale);
+    cpSync(srcPath, dstPath, { recursive: true, force: true });
   }
 }
 
