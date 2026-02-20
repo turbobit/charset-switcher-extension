@@ -46,7 +46,13 @@ if (existsSync(localesRoot) && lstatSync(localesRoot).isDirectory()) {
   }
 }
 
-const psScript = `Compress-Archive -Path '${join(extensionDir, '*')}' -DestinationPath '${zipPath}' -Force`;
-execSync(`powershell -NoProfile -Command "${psScript}"`, { stdio: 'inherit' });
+const isWindows = process.platform === 'win32';
+
+if (isWindows) {
+  const psScript = `Compress-Archive -Path '${join(extensionDir, '*')}' -DestinationPath '${zipPath}' -Force`;
+  execSync(`powershell -NoProfile -Command "${psScript}"`, { stdio: 'inherit' });
+} else {
+  execSync(`(cd "${extensionDir}" && zip -r "${zipPath}" .)`, { stdio: 'inherit' });
+}
 
 console.log(`Created: ${zipPath}`);

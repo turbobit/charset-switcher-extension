@@ -1,6 +1,6 @@
 {
   "name": "charset-switcher-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chrome extension for forcing webpage charset",
   "author": "",
   "license": "MIT",
