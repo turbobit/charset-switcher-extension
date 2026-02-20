@@ -11,7 +11,8 @@
     "build:pages": "node scripts/build-pages.mjs",
     "package:chrome": "node scripts/package-extension.mjs",
     "i18n:check": "node scripts/validate-locales.mjs",
-    "release": "npm run clean:dist && npm run build:pages && npm run package:chrome"
+    "release": "npm run clean:dist && npm run build:pages && npm run package:chrome",
+    "build": "npm run release"
   },
   "repository": {
     "type": "git",
