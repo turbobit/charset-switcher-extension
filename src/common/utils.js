@@ -1,7 +1,7 @@
 export function getDomainFromUrl(url) {
   try {
     const urlObj = new URL(url);
-    return urlObj.hostname;
+    return urlObj.hostname.toLowerCase();
   } catch {
     return null;
   }

@@ -40,6 +40,28 @@ export async function setEnabledDomains(domains) {
   await chrome.storage.sync.set({ [STORAGE_KEYS.ENABLED_DOMAINS]: domains });
 }
 
+export async function addEnabledDomain(domain) {
+  if (!domain) return;
+  const domains = await getEnabledDomains();
+  if (domains.includes(domain)) return;
+  domains.push(domain);
+  await setEnabledDomains(domains);
+}
+
+export async function removeEnabledDomain(domain) {
+  if (!domain) return;
+  const domains = await getEnabledDomains();
+  const filtered = domains.filter((item) => item !== domain);
+  if (filtered.length === domains.length) return;
+  await setEnabledDomains(filtered);
+}
+
+export async function isDomainEnabled(domain) {
+  if (!domain) return false;
+  const domains = await getEnabledDomains();
+  return domains.includes(domain);
+}
+
 export async function getCustomCharsets() {
   const result = await chrome.storage.sync.get(STORAGE_KEYS.CUSTOM_CHARSETS);
   return result[STORAGE_KEYS.CUSTOM_CHARSETS] || [];

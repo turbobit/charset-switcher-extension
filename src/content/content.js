@@ -63,25 +63,34 @@ async function applyCharsetForCurrentSite() {
     .catch(() => {});
 }
 
+const INJECTED_FLAG = '__charsetSwitcherInjected';
+
+function registerRuntimeListeners() {
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== 'sync') return;
+    if (changes.siteCharsetSettings) {
+      syncCurrentSiteCharset();
+    }
+  });
+
+  chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+    if (request.type === 'apply_charset') {
+      setCharset(request.charset);
+      sendResponse({ success: true });
+      return;
+    }
+
+    if (request.type === 'get_current_charset') {
+      const currentCharset =
+        document.querySelector('meta[charset]')?.getAttribute('charset') || 'unknown';
+      sendResponse({ charset: currentCharset });
+    }
+  });
+}
+
+if (!window[INJECTED_FLAG]) {
+  window[INJECTED_FLAG] = true;
+  registerRuntimeListeners();
+}
+
 applyCharsetForCurrentSite();
-
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName !== 'sync') return;
-  if (changes.siteCharsetSettings) {
-    syncCurrentSiteCharset();
-  }
-});
-
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  if (request.type === 'apply_charset') {
-    setCharset(request.charset);
-    sendResponse({ success: true });
-    return;
-  }
-
-  if (request.type === 'get_current_charset') {
-    const currentCharset =
-      document.querySelector('meta[charset]')?.getAttribute('charset') || 'unknown';
-    sendResponse({ charset: currentCharset });
-  }
-});
