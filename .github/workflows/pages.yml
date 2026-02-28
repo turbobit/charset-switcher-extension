@@ -25,9 +25,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build pages
-        run: npm run build:pages
+      - name: Build (generate docs and extension)
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

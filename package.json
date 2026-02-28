@@ -11,8 +11,10 @@
     "build:pages": "node scripts/build-pages.mjs",
     "package:chrome": "node scripts/package-extension.mjs",
     "i18n:check": "node scripts/validate-locales.mjs",
-    "release": "npm run clean:dist && npm run build:pages && npm run package:chrome",
-    "build": "npm run release"
+    "release": "npm run clean:dist && npm run package:chrome && npm run build:pages",
+    "build": "npm run release",
+    "deploy:pages-ci": "gh workflow run pages.yml --ref main",
+    "build-and-deploy": "npm run build && npm run deploy:pages-ci"
   },
   "repository": {
     "type": "git",
