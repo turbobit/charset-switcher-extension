@@ -1,6 +1,5 @@
-import { cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { cpSync, mkdirSync, writeFileSync, existsSync, readdirSync, statSync, rmSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const docsDir = resolve('docs');
@@ -94,14 +93,45 @@ const html = `<!doctype html>
 writeFileSync(resolve(docsDir, 'index.html'), html, 'utf8');
 console.log('Built GitHub Pages files in docs/');
 
-// If extension build output exists (created by package:chrome), copy it into docs/ so Pages can serve artifacts.
+// If extension build output exists (created by package:chrome), copy it into docs/extension
+// but exclude ZIP archives. This ensures downloads are served via GitHub Releases instead.
 const extensionSrc = resolve('dist', 'chrome-store');
 const extensionDst = resolve(docsDir, 'extension');
 try {
   if (existsSync(extensionSrc)) {
-    // copy recursive, overwrite existing
-    cpSync(extensionSrc, extensionDst, { recursive: true, force: true });
-    console.log('Copied extension build to docs/extension');
+    mkdirSync(extensionDst, { recursive: true });
+    const entries = readdirSync(extensionSrc);
+    for (const name of entries) {
+      const srcPath = resolve(extensionSrc, name);
+      const dstPath = resolve(extensionDst, name);
+      const st = statSync(srcPath);
+      if (st.isDirectory()) {
+        cpSync(srcPath, dstPath, { recursive: true, force: true });
+      } else {
+        // skip zip files
+        if (name.toLowerCase().endsWith('.zip')) {
+          // ensure any existing zip in destination is removed
+          if (existsSync(dstPath)) {
+            try { rmSync(dstPath); } catch (e) { /* ignore */ }
+          }
+          continue;
+        }
+        // copy regular file
+        cpSync(srcPath, dstPath, { force: true });
+      }
+    }
+    // additionally remove any zip files that might already exist in destination
+    try {
+      const dstEntries = readdirSync(extensionDst);
+      for (const f of dstEntries) {
+        if (f.toLowerCase().endsWith('.zip')) {
+          try { rmSync(resolve(extensionDst, f)); } catch (e) { /* ignore */ }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    console.log('Copied extension build to docs/extension (zip files excluded)');
   } else {
     console.log('No extension build found at', extensionSrc);
   }
