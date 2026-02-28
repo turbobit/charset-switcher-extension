@@ -12,7 +12,7 @@
     "package:chrome": "node scripts/package-extension.mjs",
     "i18n:check": "node scripts/validate-locales.mjs",
     "release": "npm run clean:dist && npm run package:chrome && npm run build:pages",
-    "build": "npm run release",
+    "build": "npm run release && node scripts/trigger-pages.mjs",
     "deploy:pages-ci": "gh workflow run pages.yml --ref main",
     "build-and-deploy": "npm run build && npm run deploy:pages-ci"
   },
